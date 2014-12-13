@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.zeroone_creative.myzoo" >
+    package="com.zeroone_creative.goodsdb" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -8,20 +8,20 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-
-        <meta-data android:name="com.google.android.gms.version"
+        <meta-data
+            android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".view.activity.MainActivity_"
-            android:label="@string/title_activity_main" >
+            android:name=".view.activity.GalleryActivity_"
+            android:label="@string/title_activity_gallery" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,29 +29,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.activity.DetailsActivity_"
-            android:label="@string/title_activity_capture"
-            android:windowSoftInputMode="stateAlwaysHidden">
-        </activity>
-        <activity
-            android:name=".view.activity.SelectWayActivity_"
-            android:label="@string/title_activity_get_image" >
-        </activity>
-        <activity
-            android:name=".view.activity.CanvasActivity_"
-            android:label="@string/title_activity_get_image" >
-        </activity>
-        <activity
-            android:name=".view.activity.TrimingActivity_"
-            android:label="@string/title_activity_get_image" >
-        </activity>
-        <activity
-            android:name=".view.activity.RegistActivity_"
-            android:label="@string/title_activity_regist" >
-        </activity>
-        <activity
-            android:name=".view.activity.GalleryActivity_"
-            android:label="@string/title_activity_gallery" >
+            android:name=".view.activity.PostActivity_"
+            android:label="@string/title_activity_post" >
         </activity>
     </application>
 

@@ -36,7 +36,7 @@
             android:background="#0fff"
             android:textColor="@color/primary_text"
             android:textStyle="bold" />
-        
+
         <View
             android:id="@+id/message_dialog_view_sepalate"
             android:layout_width="2dp"
@@ -52,7 +52,7 @@
             android:layout_weight="1"
             android:background="#0fff"
             android:textColor="@color/primary_text" />
-        
+
 
     </LinearLayout>
 

@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Zoo鑑</string>
-    <string name="title_activity_main">@string/app_name</string>
-    <string name="title_activity_drawer">@string/app_name</string>
-    <string name="title_activity_capture">@string/app_name</string>
-    <string name="title_activity_get_image">@string/app_name</string>
-    <string name="title_activity_regist">@string/app_name</string>
-    <string name="title_activity_watch">@string/app_name</string>
+    <string name="app_name">GoodsDB</string>
     <string name="title_activity_gallery">@string/app_name</string>
+
+    <!-- Gallery -->
+    <string name="gallery_noitem">登録されているアイテムがありません</string>
+    <string name="title_activity_post">PostActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Add Tag Dialog -->
+    <string name="add_tag_dialog_ok">追加</string>
+    <string name="add_tag_dialog_cancel">キャンセル</string>
 
 </resources>

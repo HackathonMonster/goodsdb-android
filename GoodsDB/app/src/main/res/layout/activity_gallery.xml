@@ -9,15 +9,7 @@
     android:paddingBottom="24dp"
     android:orientation="vertical"
     android:background="@drawable/img_main_back"
-    tools:context="com.zeroone_creative.myzoo.view.activity.GalleryActivity">
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/button_height"
-        android:id="@+id/imageView"
-        android:layout_gravity="center_horizontal"
-        android:scaleType="fitCenter"
-        android:src="@drawable/img_gallerytop_title"/>
+    tools:context="com.zeroone_creative.goodsdb.view.activity.GalleryActivity">
 
     <TextView
         android:id="@+id/gallery_textview"

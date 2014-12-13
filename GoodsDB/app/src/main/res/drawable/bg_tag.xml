@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/transparent"/>
+    <stroke android:color="@color/primary" android:width="@dimen/tag_stroke_width"/>
+    <corners android:radius="@dimen/tag_radious" />
+    <padding android:left="@dimen/tag_padding_horizontal"
+            android:bottom="@dimen/tag_padding_vartival"
+            android:right="@dimen/tag_padding_horizontal"
+            android:top="@dimen/tag_padding_vartival"/>
+</shape>
