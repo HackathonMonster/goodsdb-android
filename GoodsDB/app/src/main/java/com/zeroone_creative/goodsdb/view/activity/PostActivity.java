@@ -9,7 +9,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
@@ -22,7 +21,7 @@ import com.zeroone_creative.goodsdb.controller.provider.NetworkTasks;
 import com.zeroone_creative.goodsdb.controller.util.ImageUtil;
 import com.zeroone_creative.goodsdb.controller.util.PostPictureRequestUtil;
 import com.zeroone_creative.goodsdb.model.system.AppConfig;
-import com.zeroone_creative.goodsdb.model.system.UriUtil;
+import com.zeroone_creative.goodsdb.model.system.ImageUriUtil;
 import com.zeroone_creative.goodsdb.view.fragment.AddTagDialogFragment;
 
 import org.androidannotations.annotations.AfterViews;
@@ -30,6 +29,8 @@ import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.ViewById;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,7 +70,7 @@ public class PostActivity extends Activity implements AddTagDialogFragment.AddTa
     }
 
     private void runchCameraIntent() {
-        mImageUri = UriUtil.getPhotoUri(getApplicationContext());
+        mImageUri = ImageUriUtil.getPhotoUri(getApplicationContext());
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.addCategory(Intent.CATEGORY_DEFAULT);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
@@ -171,8 +172,18 @@ public class PostActivity extends Activity implements AddTagDialogFragment.AddTa
 
             }
         });
-        postTask.onRequest(com.zeroone_creative.goodsdb.controller.util.UriUtil.postGoodsUri(),
-                );
+
+        List<NameValuePair> stringParams = new ArrayList<NameValuePair>();
+        //TODO Chage test -> user input
+        stringParams.add(new BasicNameValuePair("item[name]","test"));
+        for(String tag : mTagTexts) {
+            stringParams.add(new BasicNameValuePair("item[tags][]",tag));
+        }
+
+        List<Bitmap> imageParams = new ArrayList<Bitmap>();
+        //TODO Change single image -> multi image
+        imageParams.add(mImageData);
+        postTask.onRequest(com.zeroone_creative.goodsdb.controller.util.UriUtil.postGoodsUri(), stringParams, imageParams);
     }
 
 }

@@ -13,7 +13,7 @@ import java.util.Date;
 /**
  * Created by shunhosaka on 2014/12/06.
  */
-public class UriUtil {
+public class ImageUriUtil {
     /**
      * 画像のディレクトリパスを取得する
      *

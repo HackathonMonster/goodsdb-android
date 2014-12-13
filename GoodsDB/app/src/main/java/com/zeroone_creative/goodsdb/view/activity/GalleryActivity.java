@@ -7,17 +7,11 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import com.android.volley.Request;
 import com.google.gson.Gson;
 import com.zeroone_creative.goodsdb.R;
 import com.zeroone_creative.goodsdb.controller.provider.NetworkTaskCallback;
-import com.zeroone_creative.goodsdb.controller.provider.NetworkTasks;
-import com.zeroone_creative.goodsdb.controller.provider.VolleyHelper;
 import com.zeroone_creative.goodsdb.controller.util.JSONArrayRequestUtil;
-import com.zeroone_creative.goodsdb.controller.util.UriUtil;
-import com.zeroone_creative.goodsdb.model.pojo.Account;
 import com.zeroone_creative.goodsdb.model.pojo.Creature;
-import com.zeroone_creative.goodsdb.model.system.AccountHelper;
 import com.zeroone_creative.goodsdb.view.adapter.CreatureAdapter;
 
 import org.androidannotations.annotations.AfterViews;
@@ -87,11 +81,13 @@ public class GalleryActivity extends Activity implements AdapterView.OnItemClick
         },
         getClass().getSimpleName(),
         null);
+        /* TODO
         Account account = AccountHelper.getAccount(getApplicationContext());
         getCreaturesTask.onRequest(VolleyHelper.getRequestQueue(getApplicationContext()),
                 Request.Priority.NORMAL,
                 UriUtil.getGalleryUri(account.userId),
-                NetworkTasks.Gallery);
+                Gallery);
+        */
     }
 
     @Click(R.id.gallery_textview)

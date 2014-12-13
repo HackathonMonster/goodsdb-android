@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="facebook_app_id">823996380993796</string>
     <string name="app_name">GoodsDB</string>
     <string name="title_activity_gallery">@string/app_name</string>
 
@@ -13,5 +14,6 @@
     <!-- Add Tag Dialog -->
     <string name="add_tag_dialog_ok">追加</string>
     <string name="add_tag_dialog_cancel">キャンセル</string>
+    <string name="title_activity_login">LoginActivity</string>
 
 </resources>
