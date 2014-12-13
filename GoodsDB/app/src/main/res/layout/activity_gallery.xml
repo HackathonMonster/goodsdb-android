@@ -1,0 +1,46 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/main_left_margin"
+    android:paddingRight="8dp"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="24dp"
+    android:orientation="vertical"
+    android:background="@drawable/img_main_back"
+    tools:context="com.zeroone_creative.myzoo.view.activity.GalleryActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/button_height"
+        android:id="@+id/imageView"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="fitCenter"
+        android:src="@drawable/img_gallerytop_title"/>
+
+    <TextView
+        android:id="@+id/gallery_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:textColor="@color/accent"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"/>
+
+    <GridView
+        android:id="@+id/gallery_gridbview"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:numColumns="3"
+        android:verticalSpacing="4dp"
+        android:horizontalSpacing="4dp"/>
+
+</LinearLayout>
+
+
+
+

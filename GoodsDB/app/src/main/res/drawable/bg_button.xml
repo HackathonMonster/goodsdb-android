@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape xmlns:android="http://schemas.android.com/apk/res/android">
+            <solid android:color="#8fff"/>
+            <corners android:radius="8dp"/>
+            <stroke android:color="#fff" android:width="4dp"/>
+            <size android:width="30dp" android:height="30dp"/>
+        </shape>
+    </item>
+    <item android:state_focused="true">
+        <shape xmlns:android="http://schemas.android.com/apk/res/android">
+            <solid android:color="#afff"/>
+            <corners android:radius="8dp"/>
+            <stroke android:color="#fff" android:width="4dp"/>
+            <size android:width="30dp" android:height="30dp"/>
+        </shape>
+    </item>
+    <item android:drawable = "@drawable/bm_button"/>
+</selector>
