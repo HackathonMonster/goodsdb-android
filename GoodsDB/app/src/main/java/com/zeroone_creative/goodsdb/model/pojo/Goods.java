@@ -12,4 +12,6 @@ public class Goods {
     public String updated_at;
     public List<Tag> tags;
     public List<Picture> pictures;
+    public boolean liked = false;
 }
+

@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.zeroone_creative.goodsdb.view.activity.LoginActivity">
+    tools:context="com.zeroone_creative.goodsdb.view.activity.LoginActivity"
+    android:background="#fff">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar_actionbar"

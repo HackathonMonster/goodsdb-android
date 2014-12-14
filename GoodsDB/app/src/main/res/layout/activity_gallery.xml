@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.zeroone_creative.goodsdb.view.activity.GalleryActivity">
+    tools:context="com.zeroone_creative.goodsdb.view.activity.GalleryActivity"
+    android:background="#fff">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar_actionbar"
@@ -37,18 +38,26 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
-        <GridView
-            android:id="@+id/gallery_gridbview"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:numColumns="3"
-            android:verticalSpacing="4dp"
-            android:horizontalSpacing="4dp"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:fastScrollEnabled="false" />
+        <android.support.v4.widget.SwipeRefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/gallery_swipelayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <GridView
+                android:id="@+id/gallery_gridbview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:numColumns="3"
+                android:verticalSpacing="4dp"
+                android:horizontalSpacing="4dp"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:fastScrollEnabled="false" />
+
+        </android.support.v4.widget.SwipeRefreshLayout>
 
         <com.melnykov.fab.FloatingActionButton
             android:id="@+id/gallery_fab"

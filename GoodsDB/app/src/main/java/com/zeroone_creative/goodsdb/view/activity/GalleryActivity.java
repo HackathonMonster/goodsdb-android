@@ -1,6 +1,7 @@
 package com.zeroone_creative.goodsdb.view.activity;
 
 import android.content.Intent;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -12,7 +13,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.google.gson.Gson;
@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 @EActivity(R.layout.activity_gallery)
-public class GalleryActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener {
+public class GalleryActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
 
     @ViewById(R.id.toolbar_actionbar)
     Toolbar mActionBarToolbar;
@@ -56,6 +56,8 @@ public class GalleryActivity extends ActionBarActivity implements AdapterView.On
     FloatingActionButton mFAButton;
     @ViewById(R.id.gallery_spinner)
     Spinner mTypeSpinner;
+    @ViewById(R.id.gallery_swipelayout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     private GoodsAdapter mAdapter;
 
@@ -76,6 +78,11 @@ public class GalleryActivity extends ActionBarActivity implements AdapterView.On
         } else {
             translateLogin();
         }
+
+        // 色設定
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.primary,R.color.primary_light, R.color.primary_orange,R.color.primary_orange_light);
+        // Listenerをセット
+        mSwipeRefreshLayout.setOnRefreshListener(this);
     }
 
     private void setActionBarToolbar() {
@@ -103,8 +110,6 @@ public class GalleryActivity extends ActionBarActivity implements AdapterView.On
         }
     }
 
-
-
     private void setAdapter() {
         mAdapter = new GoodsAdapter(getApplicationContext(), new ArrayList<Goods>());
         mGridView.setAdapter(mAdapter);
@@ -120,10 +125,16 @@ public class GalleryActivity extends ActionBarActivity implements AdapterView.On
             @Override
             public void onSuccessNetworkTask(int taskId, Object object) {
                 parseGoodsJsonArray((JSONArray) object);
+                if(mSwipeRefreshLayout.isRefreshing()) {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
             }
             @Override
             public void onFailedNetworkTask(int taskId, Object object) {
                 MessageDialogFragment.newInstance("通信に失敗しました\nもう一度アプリを開いてください", "閉じる").show(getFragmentManager(), AppConfig.TAG_MESSSAGE_DIALOG);
+                if(mSwipeRefreshLayout.isRefreshing()) {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
             }
         },
         getClass().getSimpleName(),
@@ -199,16 +210,67 @@ public class GalleryActivity extends ActionBarActivity implements AdapterView.On
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        TextView textView = (TextView) view;
-        StringBuilder sb = new StringBuilder();
-        sb.append("parent=").append(parent.getClass().getSimpleName())
-                .append(" position=").append(position).append(" id=").append(id)
-                .append(" textView.getText()=").append(textView.getText());
-        Toast.makeText(getApplicationContext(), sb.toString(),Toast.LENGTH_SHORT).show();
+        if(position == 0) {
+            //<item>ギャラリー</item>
+            onRequest();
+        } else if(position == 1) {
+            //<item>お気に入り</item>
+            onSearch("", "favorite");
+        } else if(position == 2) {
+            //<item>落とし物</item>
+           onSearch("", "lost");
+        }
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    private void onSearch(String text, String type) {
+        List<String> tagParams = new ArrayList<String>();
+        if(!text.equals("")) {
+            tagParams.add(text);
+        }
+        Account account = AccountHelper.getAccount(getApplicationContext());
+        Map<String, String> header = new HashMap<String, String>();
+        header.put("X-Token", account.user.token);
+        JSONArrayRequestUtil searchTask = new JSONArrayRequestUtil(new NetworkTaskCallback() {
+            @Override
+            public void onSuccessNetworkTask(int taskId, Object object) {
+                parseGoodsJsonArray((JSONArray) object);
+                if(mSwipeRefreshLayout.isRefreshing()) {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
+            }
+            @Override
+            public void onFailedNetworkTask(int taskId, Object object) {
+                MessageDialogFragment.newInstance("通信に失敗しました\nもう一度アプリを開いてください", "閉じる").show(getFragmentManager(), AppConfig.TAG_MESSSAGE_DIALOG);
+                if(mSwipeRefreshLayout.isRefreshing()) {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
+            }
+        },
+        getClass().getSimpleName(),
+        header);
+        searchTask.onRequest(VolleyHelper.getRequestQueue(getApplicationContext()),
+                Request.Priority.HIGH,
+                UriUtil.getSearchUri(tagParams, type),
+                NetworkTasks.GoodsSearch);
+    }
+
+    @Override
+    public void onRefresh() {
+        int position = mTypeSpinner.getSelectedItemPosition();
+        if(position == 0) {
+            //<item>ギャラリー</item>
+            onRequest();
+        } else if(position == 1) {
+            //<item>お気に入り</item>
+            onSearch("", "favorite");
+        } else if(position == 2) {
+            //<item>落とし物</item>
+            onSearch("", "lost");
+        }
     }
 }

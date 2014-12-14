@@ -9,6 +9,9 @@ public enum NetworkTasks {
     UserLogin(3, Request.Method.POST),
     GoodsSearch(4, Request.Method.GET),
     GoodsEdit(5, Request.Method.PUT),
+    LikePost(6, Request.Method.POST),
+    LikeDelete(7, Request.Method.DELETE),
+    GoodsDelete(8, Request.Method.DELETE),
 	;
 	public int id;
 	//Request

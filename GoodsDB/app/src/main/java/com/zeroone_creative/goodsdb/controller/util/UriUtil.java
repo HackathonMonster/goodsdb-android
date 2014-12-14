@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class UriUtil {
 
-    static private String baseUrl = "138.91.20.246";
+    static private String baseUrl = "trunk-api.tuvistavie.com";
 
     static private Uri.Builder getBaseUri(){
         Uri.Builder builder = new Uri.Builder();
@@ -54,7 +54,24 @@ public class UriUtil {
         Uri.Builder builder = getBaseUri();
         //叩く先のAPI
         builder.path("/items");
-        builder.appendEncodedPath(id);
+        builder.appendPath(id);
+        return builder.build().toString();
+    }
+
+    static public String deleteGoodsUri(String id) {
+        Uri.Builder builder = getBaseUri();
+        //叩く先のAPI
+        builder.path("/items");
+        builder.appendPath(id);
+        return builder.build().toString();
+    }
+
+    static public String changeLikeUri(String id) {
+        Uri.Builder builder = getBaseUri();
+        //叩く先のAPI
+        builder.path("/items");
+        builder.appendPath(id);
+        builder.appendPath("like");
         return builder.build().toString();
     }
 

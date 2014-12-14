@@ -13,7 +13,7 @@
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/accent_text"
+        android:textColor="@color/primary"
         android:textSize="16dp" />
 
     <View
@@ -34,7 +34,7 @@
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:layout_weight="1"
             android:background="#0fff"
-            android:textColor="@color/primary_text"
+            android:textColor="@color/primary_light"
             android:textStyle="bold" />
 
         <View
@@ -51,7 +51,7 @@
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:layout_weight="1"
             android:background="#0fff"
-            android:textColor="@color/primary_text" />
+            android:textColor="@color/primary" />
 
 
     </LinearLayout>

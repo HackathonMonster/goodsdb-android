@@ -21,7 +21,13 @@
     <string name="post_edittext_name_hint">名前を入力</string>
     <string name="post_button_save">保存する</string>
     <string name="post_button_update">更新する</string>
+    <string name="post_button_favo">お気に入りに追加</string>
+    <string name="post_button_unfavo">お気に入りから削除</string>
+    <string name="post_button_drop">落としました</string>
+    <string name="post_button_look">見つけました</string>
     <string name="menu_edit">編集</string>
+    <string name="menu_remove">削除</string>
+
 
     <!-- Search -->
     <string name="search_edittext_hint">タグを検索</string>

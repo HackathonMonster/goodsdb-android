@@ -38,6 +38,7 @@ import com.zeroone_creative.goodsdb.controller.util.UriUtil;
 import com.zeroone_creative.goodsdb.model.pojo.Account;
 import com.zeroone_creative.goodsdb.model.pojo.Goods;
 import com.zeroone_creative.goodsdb.model.pojo.Picture;
+import com.zeroone_creative.goodsdb.model.pojo.PostItem;
 import com.zeroone_creative.goodsdb.model.pojo.Tag;
 import com.zeroone_creative.goodsdb.model.system.AccountHelper;
 import com.zeroone_creative.goodsdb.model.system.AppConfig;
@@ -98,8 +99,12 @@ public class PostActivity extends ActionBarActivity implements AddTagDialogFragm
     ImageView mAddImageView;
     @ViewById(R.id.post_textview_send_text)
     TextView mSendTextView;
+    @ViewById(R.id.post_imageview_send)
+    ImageView mSendImageView;
+    @ViewById(R.id.post_button_drop)
+    LinearLayout mDropButton;
 
-    private Menu mMenu;
+    private Context mContext;
 
     @AfterInject
     void onAfterInject() {
@@ -116,6 +121,9 @@ public class PostActivity extends ActionBarActivity implements AddTagDialogFragm
         if(mRunchType == RUNCH_DETAIL) {
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.menu_post, menu);
+        } else {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.menu_edit, menu);
         }
         return true;
     }
@@ -126,13 +134,18 @@ public class PostActivity extends ActionBarActivity implements AddTagDialogFragm
             case R.id.menu_edit:
                 PostActivity_.intent(this).mRunchType(PostActivity_.RUNCH_EDIT).mGoodsJson(mGoodsJson).start();
                 finish();
+                break;
+            case R.id.menu_remove:
+                removeGoods();
+                break;
             default:
-                return super.onOptionsItemSelected(item);
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @AfterViews
     void onAfterViews() {
+        mContext = this;
         mSelectString = null;
         mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         setSupportActionBar(mToolbar);
@@ -226,6 +239,17 @@ public class PostActivity extends ActionBarActivity implements AddTagDialogFragm
                             return false;
                         }
                     });
+                } else {
+                    textView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Object tag = v.getTag();
+                            if(tag!=null) {
+                                SearchActivity_.intent(mContext).mTag((String) tag).start();
+                            }
+                        }
+                    });
+
                 }
                 mGridLayout.addView(textView);
             }
@@ -254,11 +278,12 @@ public class PostActivity extends ActionBarActivity implements AddTagDialogFragm
     @Click(R.id.post_button_send)
     void onSend() {
         mSendButton.setEnabled(false);
-
         if(mRunchType == RUNCH_POST) {
             postGoods();
         } else if(mRunchType == RUNCH_EDIT) {
             editGoods();
+        } else if(mRunchType == RUNCH_DETAIL) {
+            postLoves();
         }
     }
 
@@ -305,6 +330,52 @@ public class PostActivity extends ActionBarActivity implements AddTagDialogFragm
         postTask.onRequest(com.zeroone_creative.goodsdb.controller.util.UriUtil.postGoodsUri(), stringParams, mImages);
     }
 
+
+    private void postLoves() {
+        Goods goods = new Gson().fromJson(mGoodsJson, Goods.class);
+        if(goods==null) return ;
+        Account account = AccountHelper.getAccount(getApplicationContext());
+        Map<String, String> header = new HashMap<String, String>();
+        header.put("X-Token", account.user.token);
+        JSONRequestUtil loveTask = new JSONRequestUtil(new NetworkTaskCallback() {
+            @Override
+            public void onSuccessNetworkTask(int taskId, final Object object) {
+                Log.d("Response", object.toString());
+                if(taskId == NetworkTasks.LikePost.id) {
+                    if(getFragmentManager().findFragmentByTag(AppConfig.TAG_MESSSAGE_DIALOG) == null) {
+                        MessageDialogFragment.newInstance("お気に入りに追加されました！", "閉じる").show(getFragmentManager(), AppConfig.TAG_MESSSAGE_DIALOG);
+                    }
+                    mSendTextView.setText(R.string.post_button_unfavo);
+                    mSendImageView.setImageResource(R.drawable.ic_heart_broken);
+                } else if(taskId == NetworkTasks.LikeDelete.id) {
+                    if(getFragmentManager().findFragmentByTag(AppConfig.TAG_MESSSAGE_DIALOG) == null) {
+                        MessageDialogFragment.newInstance("お気に入りから削除されました", "閉じる").show(getFragmentManager(), AppConfig.TAG_MESSSAGE_DIALOG);
+                    }
+                    mSendTextView.setText(R.string.post_button_favo);
+                    mSendImageView.setImageResource(R.drawable.ic_heart);
+                }
+            }
+            @Override
+            public void onFailedNetworkTask(int taskId, Object object) {
+                MessageDialogFragment dialog = MessageDialogFragment.newInstance("通信に失敗しました！","閉じる");
+                dialog.setCallback(new MessageDialogFragment.MessageDialogCallback() {
+                    @Override
+                    public void onMessageDialogCallback() {
+                        //finish();
+                        mSendButton.setEnabled(true);
+                    }
+                });
+                dialog.show(getFragmentManager(),AppConfig.TAG_MESSSAGE_DIALOG);
+            }
+        },
+        getClass().getSimpleName(),
+        header);
+        loveTask.onRequest(VolleyHelper.getRequestQueue(getApplicationContext()),
+                Request.Priority.HIGH,
+                UriUtil.changeLikeUri(Integer.toString(goods.id)),
+                goods.liked?NetworkTasks.LikeDelete : NetworkTasks.LikePost);
+    }
+
     private void editGoods() {
         Goods goods = new Gson().fromJson(mGoodsJson, Goods.class);
         if(goods==null) return ;
@@ -315,13 +386,66 @@ public class PostActivity extends ActionBarActivity implements AddTagDialogFragm
             @Override
             public void onSuccessNetworkTask(int taskId, final Object object) {
                 Log.d("Response", object.toString());
-                MessageDialogFragment dialog = MessageDialogFragment.newInstance("投稿が完了しました！","閉じる");
+                MessageDialogFragment dialog = MessageDialogFragment.newInstance("削除が完了しました！","閉じる");
                 dialog.setCallback(new MessageDialogFragment.MessageDialogCallback() {
                     @Override
                     public void onMessageDialogCallback() {
                         Intent data = new Intent();
                         data.putExtra("response_json", object.toString());
                         setResult(RESULT_OK, data);
+                        finish();
+                    }
+                });
+                dialog.show(getFragmentManager(),AppConfig.TAG_MESSSAGE_DIALOG);
+            }
+            @Override
+            public void onFailedNetworkTask(int taskId, Object object) {
+                MessageDialogFragment dialog = MessageDialogFragment.newInstance("通信に失敗しました！","閉じる");
+                dialog.setCallback(new MessageDialogFragment.MessageDialogCallback() {
+                    @Override
+                    public void onMessageDialogCallback() {
+                        //finish();
+                        mSendButton.setEnabled(true);
+                    }
+                });
+                dialog.show(getFragmentManager(),AppConfig.TAG_MESSSAGE_DIALOG);
+            }
+        },
+        getClass().getSimpleName(),
+        header
+        );
+        try {
+            PostItem item = new PostItem();
+            item.name = mNameEditText.getText().toString();
+            item.tags = mTagTexts;
+            JSONObject params = new JSONObject();
+            params.put("item", new JSONObject(new Gson().toJson(item)));
+            Log.d("PostActivity EditGoods", params.toString());
+            putTask.onRequest(VolleyHelper.getRequestQueue(getApplicationContext()),
+                    Request.Priority.HIGH,
+                    UriUtil.putGoodsUri(Integer.toString(goods.id)),
+                    NetworkTasks.GoodsEdit,
+                    params);
+        } catch (JSONException e) {
+            putTask = null;
+            e.printStackTrace();
+        }
+    }
+
+    private void removeGoods() {
+        Goods goods = new Gson().fromJson(mGoodsJson, Goods.class);
+        if(goods==null) return ;
+        Account account = AccountHelper.getAccount(getApplicationContext());
+        Map<String, String> header = new HashMap<String, String>();
+        header.put("X-Token", account.user.token);
+        JSONRequestUtil deleteTask = new JSONRequestUtil(new NetworkTaskCallback() {
+            @Override
+            public void onSuccessNetworkTask(int taskId, final Object object) {
+                Log.d("Response", object.toString());
+                MessageDialogFragment dialog = MessageDialogFragment.newInstance("変更が完了しました！","閉じる");
+                dialog.setCallback(new MessageDialogFragment.MessageDialogCallback() {
+                    @Override
+                    public void onMessageDialogCallback() {
                         finish();
                     }
                 });
@@ -340,26 +464,14 @@ public class PostActivity extends ActionBarActivity implements AddTagDialogFragm
                 dialog.show(getFragmentManager(),AppConfig.TAG_MESSSAGE_DIALOG);
             }
         },
-        getClass().getSimpleName(),
-        header
+                getClass().getSimpleName(),
+                header
         );
-        try {
-            JSONObject params = new JSONObject();
-            JSONObject itemObject = new JSONObject();
-            itemObject.put("name", mNameEditText.getText().toString());
-            itemObject.put("tags", mTagTexts);
-            params.put("item", itemObject);
-            putTask.onRequest(VolleyHelper.getRequestQueue(getApplicationContext()),
-                    Request.Priority.HIGH,
-                    UriUtil.putGoodsUri(Integer.toString(goods.id)),
-                    NetworkTasks.GoodsEdit,
-                    params);
-        } catch (JSONException e) {
-            putTask = null;
-            e.printStackTrace();
-        }
+        deleteTask.onRequest(VolleyHelper.getRequestQueue(getApplicationContext()),
+                Request.Priority.HIGH,
+                UriUtil.deleteGoodsUri(Integer.toString(goods.id)),
+                NetworkTasks.GoodsDelete);
     }
-
 
     private void loadGoods() {
         Goods goods = new Gson().fromJson(mGoodsJson, Goods.class);
@@ -382,7 +494,16 @@ public class PostActivity extends ActionBarActivity implements AddTagDialogFragm
                 mNameEditText.setHint("");
                 mNameEditText.setEnabled(false);
                 mAddImageView.setVisibility(View.GONE);
-                mSendButton.setVisibility(View.GONE);
+                if(goods.liked) {
+                    mSendTextView.setText(R.string.post_button_unfavo);
+                    mSendImageView.setImageResource(R.drawable.ic_heart_broken);
+                } else {
+                    mSendTextView.setText(R.string.post_button_favo);
+                    mSendImageView.setImageResource(R.drawable.ic_heart);
+                }
+                //TODO 落とし物ようのフラグ
+                mDropButton.setVisibility(View.VISIBLE);
+
             } else {
                 mNameEditText.setEnabled(true);
                 mAddImageView.setVisibility(View.VISIBLE);
@@ -422,4 +543,8 @@ public class PostActivity extends ActionBarActivity implements AddTagDialogFragm
         }
     };
 
+    @Click(R.id.post_button_drop)
+    void dropRequest() {
+        //TODO 落とし物の申請
+    }
 }

@@ -1,10 +1,12 @@
 package com.zeroone_creative.goodsdb.view.activity;
 
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
@@ -25,8 +27,10 @@ import com.zeroone_creative.goodsdb.model.system.AppConfig;
 import com.zeroone_creative.goodsdb.view.adapter.GoodsAdapter;
 import com.zeroone_creative.goodsdb.view.fragment.MessageDialogFragment;
 
+import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.ViewById;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,6 +44,9 @@ import java.util.Map;
 @EActivity(R.layout.activity_search)
 public class SearchActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
+    @Extra("tag")
+    String mTag = null;
+
     @ViewById(R.id.search_edittext)
     EditText mSearchEditText;
     @ViewById(R.id.toolbar_actionbar)
@@ -51,9 +58,26 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
 
     private GoodsAdapter mAdapter;
 
+    @AfterInject
+    void onAfterInject() {
+        if(mTag == null || mTag.equals("")) {
+            mTag = null;
+        }
+    }
+
     @AfterViews
     void onAfterViews() {
-        mHitsTextView.setText(R.string.search_hits_nav);
+        if(mTag == null) {
+            mHitsTextView.setText(R.string.search_hits_nav);
+        } else {
+            mSearchEditText.setText(mTag);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(mSearchEditText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            onSearch(mTag, "any");
+
+
+        }
+
 
         mToolbar.setNavigationIcon(R.drawable.ic_back);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -62,13 +86,12 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
                 finish();
             }
         });
-
         setAdapter();
         mSearchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    onSearch(v.getText().toString(), "found");
+                    onSearch(v.getText().toString(), "any");
                 }
                 return true; // falseを返すと, IMEがSearch→Doneへと切り替わる
             }
@@ -84,8 +107,6 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
     private void onSearch(String text, String type) {
         List<String> tagParams = new ArrayList<String>();
         tagParams.add(text);
-
-
         Account account = AccountHelper.getAccount(getApplicationContext());
         Map<String, String> header = new HashMap<String, String>();
         header.put("X-Token", account.user.token);
@@ -100,8 +121,7 @@ public class SearchActivity extends ActionBarActivity implements AdapterView.OnI
             }
         },
         getClass().getSimpleName(),
-        header
-        );
+        header);
         searchTask.onRequest(VolleyHelper.getRequestQueue(getApplicationContext()),
                 Request.Priority.HIGH,
                 UriUtil.getSearchUri(tagParams, type),
