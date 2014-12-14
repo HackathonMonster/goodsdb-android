@@ -1,29 +1,51 @@
 package com.zeroone_creative.goodsdb.view.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.zeroone_creative.goodsdb.R;
 import com.zeroone_creative.goodsdb.controller.provider.NetworkTaskCallback;
 import com.zeroone_creative.goodsdb.controller.provider.NetworkTasks;
+import com.zeroone_creative.goodsdb.controller.provider.VolleyHelper;
+import com.zeroone_creative.goodsdb.controller.util.CropSquareTransformation;
 import com.zeroone_creative.goodsdb.controller.util.ImageUtil;
+import com.zeroone_creative.goodsdb.controller.util.JSONRequestUtil;
 import com.zeroone_creative.goodsdb.controller.util.PostPictureRequestUtil;
+import com.zeroone_creative.goodsdb.controller.util.UriUtil;
+import com.zeroone_creative.goodsdb.model.pojo.Account;
+import com.zeroone_creative.goodsdb.model.pojo.Goods;
+import com.zeroone_creative.goodsdb.model.pojo.Picture;
+import com.zeroone_creative.goodsdb.model.pojo.Tag;
+import com.zeroone_creative.goodsdb.model.system.AccountHelper;
 import com.zeroone_creative.goodsdb.model.system.AppConfig;
 import com.zeroone_creative.goodsdb.model.system.ImageUriUtil;
 import com.zeroone_creative.goodsdb.view.fragment.AddTagDialogFragment;
+import com.zeroone_creative.goodsdb.view.fragment.MessageDialogFragment;
 
+import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
@@ -31,45 +53,100 @@ import org.androidannotations.annotations.Extra;
 import org.androidannotations.annotations.ViewById;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @EActivity(R.layout.activity_post)
-public class PostActivity extends Activity implements AddTagDialogFragment.AddTagDialogCallback {
-    @Extra("is_post")
-    boolean mIsPost = true;
+public class PostActivity extends ActionBarActivity implements AddTagDialogFragment.AddTagDialogCallback {
+    public final static int RUNCH_POST = 0;
+    public final static int RUNCH_DETAIL = 1;
+    public final static int RUNCH_EDIT = 2;
+
+    @Extra("runch_type")
+    int mRunchType = RUNCH_POST;
+    @Extra("goods_json")
+    String mGoodsJson;
 
     //For activity result tag
     private static int GET_IMAGE_CAMERA = 201;
 
     private static Uri mImageUri;
-    private Bitmap mImageData;
+    private List<Bitmap> mImages = new ArrayList<Bitmap>();
     private List<String> mTagTexts = new ArrayList<String>();
     private LayoutInflater mInflater;
     private String mSelectString = null;
 
-    //Image Holder
-    //TODO => List<ImageView> in LinearLayout(Horizontal)[Image Container]
-    @ViewById(R.id.post_imageview)
+    @ViewById(R.id.toolbar_actionbar)
+    Toolbar mToolbar;
+    @ViewById(R.id.post_edittext_name)
+    EditText mNameEditText;
+    @ViewById(R.id.post_imageview_main)
     ImageView mImageView;
+    @ViewById(R.id.post_layout_image_container)
+    LinearLayout mImageContainerLayout;
     @ViewById(R.id.post_gridlayout_tag_container)
     GridLayout mGridLayout;
     @ViewById(R.id.post_button_send)
-    Button mSendButton;
+    LinearLayout mSendButton;
+    @ViewById(R.id.post_imageview_add)
+    ImageView mAddImageView;
+    @ViewById(R.id.post_textview_send_text)
+    TextView mSendTextView;
+
+    private Menu mMenu;
+
+    @AfterInject
+    void onAfterInject() {
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if(mRunchType == RUNCH_DETAIL) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.menu_post, menu);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_edit:
+                PostActivity_.intent(this).mRunchType(PostActivity_.RUNCH_EDIT).mGoodsJson(mGoodsJson).start();
+                finish();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     @AfterViews
     void onAfterViews() {
         mSelectString = null;
         mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        setSupportActionBar(mToolbar);
         refleshGridLayout();
-        if(mIsPost) {
+        if(mRunchType == RUNCH_POST ) {
             runchCameraIntent();
+        } else {
+            //Load
+            loadGoods();
         }
     }
 
-    private void runchCameraIntent() {
+    @Click(R.id.post_imageview_add)
+    void runchCameraIntent() {
         mImageUri = ImageUriUtil.getPhotoUri(getApplicationContext());
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.addCategory(Intent.CATEGORY_DEFAULT);
@@ -83,14 +160,23 @@ public class PostActivity extends Activity implements AddTagDialogFragment.AddTa
         if (requestCode == GET_IMAGE_CAMERA) {
             if( resultCode == RESULT_OK ) {
                 try {
-                    mImageData = ImageUtil.loadImage(getApplicationContext(), mImageUri);
-                    //データ入力
-                    Picasso.with(getApplicationContext()).load(mImageUri).into(mImageView);
+                    mImages.add(ImageUtil.loadImage(getApplicationContext(), mImageUri));
+                    if(mImages.size() == 1) {
+                        //データ入力
+                        Picasso.with(getApplicationContext()).load(mImageUri).error(R.drawable.img_detail_noimg).into(mImageView);
+                    } else {
+                        ImageView imageView = (ImageView) mInflater.inflate(R.layout.item_image, null);
+                        Picasso.with(getApplicationContext()).load(mImageUri).transform(new CropSquareTransformation()).error(R.drawable.img_detail_noimg).resize(getResources().getDimensionPixelSize(R.dimen.post_iamgeview_sub_size), getResources().getDimensionPixelSize(R.dimen.post_iamgeview_sub_size)).into(imageView);
+                        //imageView.setImageBitmap(ImageUtil.loadImage(getApplicationContext(), mImageUri));
+                        mImageContainerLayout.addView(imageView, 0);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {
-                finish();
+                if(mImages.size() < 1) {
+                    finish();
+                }
             }
         }
     }
@@ -127,30 +213,35 @@ public class PostActivity extends Activity implements AddTagDialogFragment.AddTa
         for(String tag : mTagTexts) {
             if(tag!=null) {
                 TextView textView = getTagTextView(tag);
-                textView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        Object tag = v.getTag();
-                        if(tag!=null) {
-                            mTagTexts.remove(tag);
-                            mSelectString = (String) tag;
-                            showAddTagDialog((String) tag);
+                if(mRunchType!=RUNCH_DETAIL) {
+                    textView.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            Object tag = v.getTag();
+                            if(tag!=null) {
+                                mTagTexts.remove(tag);
+                                mSelectString = (String) tag;
+                                showAddTagDialog((String) tag);
+                            }
+                            return false;
                         }
-                        return false;
-                    }
-                });
+                    });
+                }
                 mGridLayout.addView(textView);
-
             }
         }
-        TextView plusTextView = getTagTextView("+");
-        plusTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showAddTagDialog("");
-            }
-        });
-        mGridLayout.addView(plusTextView);
+        if(mRunchType != RUNCH_DETAIL) {
+            TextView plusTextView = getTagTextView("+");
+            plusTextView.setTextSize(18);
+            plusTextView.setBackgroundResource(R.drawable.bg_tag_plus);
+            plusTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showAddTagDialog("");
+                }
+            });
+            mGridLayout.addView(plusTextView);
+        }
     }
 
     private TextView getTagTextView(String tag) {
@@ -162,28 +253,173 @@ public class PostActivity extends Activity implements AddTagDialogFragment.AddTa
 
     @Click(R.id.post_button_send)
     void onSend() {
+        mSendButton.setEnabled(false);
+
+        if(mRunchType == RUNCH_POST) {
+            postGoods();
+        } else if(mRunchType == RUNCH_EDIT) {
+            editGoods();
+        }
+    }
+
+    private void postGoods() {
+        Account account = AccountHelper.getAccount(getApplicationContext());
+        List<NameValuePair> header = new ArrayList<NameValuePair>();
+        header.add(new BasicNameValuePair("X-Token", account.user.token));
         PostPictureRequestUtil postTask = new PostPictureRequestUtil(NetworkTasks.GoodsPost, new NetworkTaskCallback() {
             @Override
-            public void onSuccessNetworkTask(int taskId, Object object) {
+            public void onSuccessNetworkTask(int taskId, final Object object) {
                 Log.d("Response", object.toString());
+                MessageDialogFragment dialog = MessageDialogFragment.newInstance("投稿が完了しました！","閉じる");
+                dialog.setCallback(new MessageDialogFragment.MessageDialogCallback() {
+                    @Override
+                    public void onMessageDialogCallback() {
+                        Intent data = new Intent();
+                        data.putExtra("response_json", object.toString());
+                        setResult(RESULT_OK, data);
+                        finish();
+                    }
+                });
+                dialog.show(getFragmentManager(),AppConfig.TAG_MESSSAGE_DIALOG);
             }
             @Override
             public void onFailedNetworkTask(int taskId, Object object) {
-
+                MessageDialogFragment dialog = MessageDialogFragment.newInstance("投稿に失敗しました！","閉じる");
+                dialog.setCallback(new MessageDialogFragment.MessageDialogCallback() {
+                    @Override
+                    public void onMessageDialogCallback() {
+                        //finish();
+                        mSendButton.setEnabled(true);
+                    }
+                });
+                dialog.show(getFragmentManager(),AppConfig.TAG_MESSSAGE_DIALOG);
             }
         });
-
+        postTask.setHeader(header);
         List<NameValuePair> stringParams = new ArrayList<NameValuePair>();
         //TODO Chage test -> user input
-        stringParams.add(new BasicNameValuePair("item[name]","test"));
+        stringParams.add(new BasicNameValuePair("item[name]",mNameEditText.getText().toString()));
         for(String tag : mTagTexts) {
             stringParams.add(new BasicNameValuePair("item[tags][]",tag));
         }
-
-        List<Bitmap> imageParams = new ArrayList<Bitmap>();
-        //TODO Change single image -> multi image
-        imageParams.add(mImageData);
-        postTask.onRequest(com.zeroone_creative.goodsdb.controller.util.UriUtil.postGoodsUri(), stringParams, imageParams);
+        postTask.onRequest(com.zeroone_creative.goodsdb.controller.util.UriUtil.postGoodsUri(), stringParams, mImages);
     }
+
+    private void editGoods() {
+        Goods goods = new Gson().fromJson(mGoodsJson, Goods.class);
+        if(goods==null) return ;
+        Account account = AccountHelper.getAccount(getApplicationContext());
+        Map<String, String> header = new HashMap<String, String>();
+        header.put("X-Token", account.user.token);
+        JSONRequestUtil putTask = new JSONRequestUtil(new NetworkTaskCallback() {
+            @Override
+            public void onSuccessNetworkTask(int taskId, final Object object) {
+                Log.d("Response", object.toString());
+                MessageDialogFragment dialog = MessageDialogFragment.newInstance("投稿が完了しました！","閉じる");
+                dialog.setCallback(new MessageDialogFragment.MessageDialogCallback() {
+                    @Override
+                    public void onMessageDialogCallback() {
+                        Intent data = new Intent();
+                        data.putExtra("response_json", object.toString());
+                        setResult(RESULT_OK, data);
+                        finish();
+                    }
+                });
+                dialog.show(getFragmentManager(),AppConfig.TAG_MESSSAGE_DIALOG);
+            }
+            @Override
+            public void onFailedNetworkTask(int taskId, Object object) {
+                MessageDialogFragment dialog = MessageDialogFragment.newInstance("投稿に失敗しました！","閉じる");
+                dialog.setCallback(new MessageDialogFragment.MessageDialogCallback() {
+                    @Override
+                    public void onMessageDialogCallback() {
+                        //finish();
+                        mSendButton.setEnabled(true);
+                    }
+                });
+                dialog.show(getFragmentManager(),AppConfig.TAG_MESSSAGE_DIALOG);
+            }
+        },
+        getClass().getSimpleName(),
+        header
+        );
+        try {
+            JSONObject params = new JSONObject();
+            JSONObject itemObject = new JSONObject();
+            itemObject.put("name", mNameEditText.getText().toString());
+            itemObject.put("tags", mTagTexts);
+            params.put("item", itemObject);
+            putTask.onRequest(VolleyHelper.getRequestQueue(getApplicationContext()),
+                    Request.Priority.HIGH,
+                    UriUtil.putGoodsUri(Integer.toString(goods.id)),
+                    NetworkTasks.GoodsEdit,
+                    params);
+        } catch (JSONException e) {
+            putTask = null;
+            e.printStackTrace();
+        }
+    }
+
+
+    private void loadGoods() {
+        Goods goods = new Gson().fromJson(mGoodsJson, Goods.class);
+        if(goods!=null) {
+            if(goods.name!=null) {
+                mNameEditText.setText(goods.name);
+            }
+            if(goods.tags!=null) {
+                for(Tag tag : goods.tags) {
+                    mTagTexts.add(tag.name);
+                }
+                refleshGridLayout();
+            }
+            if(goods.pictures!=null) {
+                for(Picture picture : goods.pictures) {
+                    Picasso.with(getApplicationContext()).load(picture.imageUrl).into(mPicassoTarget);
+                }
+            }
+            if(mRunchType == RUNCH_DETAIL) {
+                mNameEditText.setHint("");
+                mNameEditText.setEnabled(false);
+                mAddImageView.setVisibility(View.GONE);
+                mSendButton.setVisibility(View.GONE);
+            } else {
+                mNameEditText.setEnabled(true);
+                mAddImageView.setVisibility(View.VISIBLE);
+                mSendButton.setVisibility(View.VISIBLE);
+                if(mRunchType == RUNCH_POST) {
+                    mSendTextView.setText(R.string.post_button_save);
+                } else if(mRunchType == RUNCH_EDIT) {
+                    mSendTextView.setText(R.string.post_button_update);
+                }
+            }
+        }
+    }
+
+    private Target mPicassoTarget = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            mImages.add(bitmap);
+            if(mImages.size() == 1) {
+                mImageView.setImageBitmap(bitmap);
+            } else {
+                ImageView imageView = (ImageView) mInflater.inflate(R.layout.item_image, null);
+                bitmap = ImageUtil.resize(bitmap,
+                        getResources().getDimensionPixelSize(R.dimen.post_iamgeview_sub_size),
+                        getResources().getDimensionPixelSize(R.dimen.post_iamgeview_sub_size));
+                imageView.setImageBitmap(bitmap);
+                mImageContainerLayout.addView(imageView,0);
+            }
+        }
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+            if(mImages.size() < 1) {
+                mImageView.setImageResource(R.drawable.img_detail_noimg);
+            }
+        }
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+        }
+    };
 
 }

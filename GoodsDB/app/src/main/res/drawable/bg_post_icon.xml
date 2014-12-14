@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape android:shape="oval">
+            <size android:width="@dimen/button_size"
+                android:height="@dimen/button_size"/>
+            <solid android:color="@color/primary_light_alpha"/>
+            <stroke android:color="@color/primary"
+                android:width="@dimen/button_stroke_width"/>
+            <padding android:bottom="@dimen/button_padding_vertical"
+                android:left="@dimen/button_padding_horizontal"
+                android:right="@dimen/button_padding_horizontal"
+                android:top="@dimen/button_padding_vertical" />
+        </shape>
+    </item>
+    <item >
+        <shape android:shape="oval">
+            <size android:width="@dimen/button_size"
+                  android:height="@dimen/button_size"/>
+            <solid android:color="#0fff"/>
+            <stroke android:color="@color/primary"
+                    android:width="@dimen/button_stroke_width"/>
+            <padding android:bottom="@dimen/button_padding_vertical"
+                android:left="@dimen/button_padding_horizontal"
+                android:right="@dimen/button_padding_horizontal"
+                android:top="@dimen/button_padding_vertical" />
+        </shape>
+    </item>
+</selector>

@@ -2,6 +2,7 @@ package com.zeroone_creative.goodsdb.view.fragment;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -69,6 +71,9 @@ public class AddTagDialogFragment extends DialogFragment implements OnClickListe
 		switch(view.getId()) {
 		case R.id.add_tag_dialog_button_confilm:
             if(mCallback != null) {
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mContentEditText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
                 mCallback.onTagDialogCallback(mContentEditText.getText().toString());
             }
             this.dismiss();

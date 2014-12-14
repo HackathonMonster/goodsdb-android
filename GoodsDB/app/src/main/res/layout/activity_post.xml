@@ -1,44 +1,142 @@
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/scrollView">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_actionbar"
+        android:layout_height="@dimen/button_height"
+        android:layout_width="match_parent"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/primary">
+
+        <EditText
+            android:id="@+id/post_edittext_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="#fff"
+            android:hint="@string/post_edittext_name_hint"
+            android:textColorHint="@color/accent_text"
+            android:background="#0fff"
+            android:paddingLeft="@dimen/element_spacing_normal"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:inputType="text"
+            android:maxLines="1"
+            android:gravity="center_vertical"/>
+
+    </android.support.v7.widget.Toolbar>
+
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:orientation="vertical"
-        tools:context="com.zeroone_creative.goodsdb.view.activity.PostActivity">
+        android:id="@+id/scrollView">
 
-
-        <ImageView
-            android:id="@+id/post_imageview"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"/>
+            android:orientation="vertical"
+            tools:context="com.zeroone_creative.goodsdb.view.activity.PostActivity"
+            android:paddingBottom="@dimen/activity_vertical_margin">
 
-        <GridLayout
-            android:id="@+id/post_gridlayout_tag_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:isScrollContainer="true"
-            android:useDefaultMargins="true"
-            android:columnCount="3" >
 
-        </GridLayout>
+            <ImageView
+                android:id="@+id/post_imageview_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"/>
 
-        <Button
-            android:id="@+id/post_button_send"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="POST"/>
+            <HorizontalScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/element_spacing_normal">
 
-    </LinearLayout>
-</ScrollView>
+                <LinearLayout
+                    android:id="@+id/post_layout_image_container"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/post_imageview_add"
+                        android:layout_width="@dimen/post_iamgeview_sub_size"
+                        android:layout_height="@dimen/post_iamgeview_sub_size"
+                        android:src="@drawable/ic_plus_image"
+                        android:padding="@dimen/post_iamgeview_sub_padding" />
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/textView"
+                android:text="@string/post_textview_tag"
+                android:textColor="@color/primary"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/primary_light"
+                android:layout_marginTop="@dimen/element_spacing_normal" />
+
+            <GridLayout
+                android:id="@+id/post_gridlayout_tag_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:isScrollContainer="true"
+                android:useDefaultMargins="true"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/element_spacing_normal"
+                android:paddingBottom="@dimen/element_spacing_normal"
+                android:columnCount="3"
+                android:layout_marginTop="@dimen/element_spacing_normal">
+
+            </GridLayout>
+
+            <LinearLayout
+                android:id="@+id/post_button_send"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_post_label"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginBottom="@dimen/activity_vertical_margin">
+
+                <ImageView
+                    android:layout_width="@dimen/button_height"
+                    android:layout_height="@dimen/button_height"
+                    android:src="@drawable/img_button_save_icon"
+                    android:background="@drawable/bg_post_icon"
+                    android:scaleType="fitCenter" />
+
+                <TextView
+                    android:id="@+id/post_textview_send_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="@string/post_button_save"
+                    android:textColor="@color/primary"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:layout_marginRight="@dimen/button_size" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
+

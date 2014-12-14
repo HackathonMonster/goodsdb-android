@@ -3,11 +3,9 @@
     xmlns:yourapp="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <item android:id="@+id/menu_edit"
-        android:icon="@drawable/ic_edit"
-        android:title="@string/menu_edit"
+    <item android:id="@+id/menu_search"
+        android:icon="@drawable/ic_search"
+        android:title="@string/menu_search"
         yourapp:showAsAction="always"/>
-
-
 
 </menu>

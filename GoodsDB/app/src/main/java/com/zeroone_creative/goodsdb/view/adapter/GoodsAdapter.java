@@ -6,10 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.zeroone_creative.goodsdb.R;
-import com.zeroone_creative.goodsdb.model.pojo.Creature;
+import com.zeroone_creative.goodsdb.model.pojo.Goods;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +18,13 @@ import java.util.List;
 /**
  * Created by shunhosaka on 2014/12/04.
  */
-public class CreatureAdapter extends BaseAdapter {
+public class GoodsAdapter extends BaseAdapter {
 
-    private List<Creature> mContent = new ArrayList<Creature>();
+    private List<Goods> mContent = new ArrayList<Goods>();
     private LayoutInflater mInflater;
     private Context mContext;
 
-    public CreatureAdapter(Context context, ArrayList<Creature> content) {
+    public GoodsAdapter(Context context, ArrayList<Goods> content) {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.mContext = context;
         this.mContent = content;
@@ -35,7 +36,7 @@ public class CreatureAdapter extends BaseAdapter {
     }
 
     @Override
-    public Creature getItem(int position) {
+    public Goods getItem(int position) {
         return mContent.get(position);
     }
 
@@ -48,27 +49,35 @@ public class CreatureAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if(convertView==null) {
-            convertView = mInflater.inflate(R.layout.item_creatureadapter, null);
+            convertView = mInflater.inflate(R.layout.item_goods, null);
             holder = new ViewHolder();
-            holder.imageView = (ImageView) convertView.findViewById(R.id.item_creature_imageview);
+            holder.nameTextView = (TextView) convertView.findViewById(R.id.item_goods_textview_name);
+            holder.imageView = (ImageView) convertView.findViewById(R.id.item_goods_imageview);
             convertView.setTag(holder);
         }else{
             holder = (ViewHolder)convertView.getTag();
         }
-
-        Creature creature = mContent.get(position);
-        Picasso.with(mContext).load(creature.image).into(holder.imageView);
-
+        Goods goods = mContent.get(position);
+        if(goods.name == null || goods.name.equals("")) {
+            holder.nameTextView.setText("no title");
+        } else {
+            holder.nameTextView.setText(goods.name);
+        }
+        if(goods.pictures.size() > 0) {
+            Picasso.with(mContext).load(goods.pictures.get(0).imageUrl).error(R.drawable.img_detail_noimg).resize(300,300).centerCrop().into(holder.imageView);
+        }
         return convertView;
     }
 
     private class ViewHolder{
+        TextView nameTextView;
         ImageView imageView;
     }
 
-    public void updateContent(List<Creature> content) {
+    public void updateContent(List<Goods> content) {
         this.mContent = content;
         this.notifyDataSetChanged();
+
     }
 
 }

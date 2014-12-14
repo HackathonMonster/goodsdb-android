@@ -1,15 +1,27 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/main_left_margin"
-    android:paddingRight="8dp"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="24dp"
     android:orientation="vertical"
-    android:background="@drawable/img_main_back"
     tools:context="com.zeroone_creative.goodsdb.view.activity.GalleryActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_actionbar"
+        android:layout_height="@dimen/button_height"
+        android:layout_width="match_parent"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/primary">
+
+        <!-- ためしにスピナーを追加 -->
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/gallery_type_spinner"
+            android:id="@+id/gallery_spinner" />
+
+    </android.support.v7.widget.Toolbar>
 
     <TextView
         android:id="@+id/gallery_textview"
@@ -17,19 +29,40 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:textColor="@color/accent"
+        android:textColor="@color/accent_text"
         android:layout_gravity="center_horizontal"
         android:visibility="gone"/>
 
-    <GridView
-        android:id="@+id/gallery_gridbview"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:numColumns="3"
-        android:verticalSpacing="4dp"
-        android:horizontalSpacing="4dp"/>
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <GridView
+            android:id="@+id/gallery_gridbview"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:numColumns="3"
+            android:verticalSpacing="4dp"
+            android:horizontalSpacing="4dp"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:fastScrollEnabled="false" />
+
+        <com.melnykov.fab.FloatingActionButton
+            android:id="@+id/gallery_fab"
+            android:layout_width="@dimen/gallery_fab_size"
+            android:layout_height="@dimen/gallery_fab_size"
+            android:layout_gravity="bottom|right"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_add_white_24dp"
+            android:scaleType="fitCenter"
+            fab:fab_colorNormal="@color/primary_orange"
+            fab:fab_colorPressed="@color/primary_light"
+            fab:fab_colorRipple="@color/ripple" />
+
+    </FrameLayout>
 
 </LinearLayout>
 

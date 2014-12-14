@@ -37,8 +37,16 @@
     <dimen name="card_corner_radius">2dp</dimen>
     <dimen name="card_elevation">2dp</dimen>
 
+    <!-- Gallery -->
+    <dimen name="item_goods_ic_size">32dp</dimen>
+    <dimen name="item_goods_ic_padding_vertical">4dp</dimen>
+    <dimen name="item_goods_ic_padding_horizontal">8dp</dimen>
+    <dimen name="gallery_fab_size">48dp</dimen>
+
     <!-- Post -->
     <dimen name="post_tag_textview_margin">4dp</dimen>
+    <dimen name="post_iamgeview_sub_size">96dp</dimen>
+    <dimen name="post_iamgeview_sub_padding">24dp</dimen>
 
     <!-- shape -->
     <!-- item tag -->
@@ -47,5 +55,14 @@
     <dimen name="tag_stroke_width">2dp</dimen>
     <dimen name="tag_padding_vartival">4dp</dimen>
     <dimen name="tag_padding_horizontal">8dp</dimen>
+    <dimen name="tag_padding_horizontal_plus">4dp</dimen>
+
+    <!-- post save button -->
+    <dimen name="button_size">48dp</dimen>
+    <dimen name="button_radious">24dp</dimen>
+    <dimen name="button_padding_vertical">8dp</dimen>
+    <dimen name="button_padding_horizontal">8dp</dimen>
+    <dimen name="button_stroke_width">2dp</dimen>
+
 
 </resources>

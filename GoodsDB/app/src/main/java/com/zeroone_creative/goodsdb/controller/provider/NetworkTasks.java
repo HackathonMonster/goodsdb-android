@@ -7,6 +7,8 @@ public enum NetworkTasks {
     GoodsPost(1, Request.Method.POST),
     GoodsGet(2, Request.Method.GET),
     UserLogin(3, Request.Method.POST),
+    GoodsSearch(4, Request.Method.GET),
+    GoodsEdit(5, Request.Method.PUT),
 	;
 	public int id;
 	//Request

@@ -5,4 +5,5 @@
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
     android:background="@drawable/bg_tag"
-    android:textColor="@color/primary" />
+    android:textColor="@color/primary"
+    android:gravity="center" />

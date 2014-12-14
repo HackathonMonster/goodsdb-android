@@ -2,22 +2,26 @@
 <resources>
     <!-- Theme -->
         <!-- Primary -->
-        <color name="primary">#b71c1c</color>
-        <color name="primary_alpha">#883f51b5</color>
-        <color name="primary_dark">#303f9f</color>
-        <color name="primary_light">#7986cb</color>
+        <color name="primary">#689f38</color>
+        <color name="primary_light">#7cb342</color>
+        <color name="primary_light_alpha">#aa7cb342</color>
+
+        <color name="primary_orange">#ffc400</color>
+        <color name="primary_orange_light">#ffe57f</color>
+        <color name="primary_orange_dark">#ff9800</color>
+
         <!-- Accent...1...2...3 -->
-        <color name="accent">#8ad4fa</color>
-        <color name="accent_light">#e91e63</color>
+        <color name="accent">#283593</color>
+        <color name="accent_light">#3949ab</color>
     <!-- /Theme -->
 
     <!-- Text -->
-        <color name="primary_text">#78909c</color>
-        <color name="primary_text_light">#8878909c</color>
-        <color name="accent_text">#8a000000</color>
-        <color name="body_text_disabled">#44000000</color>
+        <color name="primary_text">#263238</color>
+        <color name="accent_text">#dddddd</color>
 
     <!-- Common System Color -->
     <color name="transparent">#00000000</color>
+
+    <color name="ripple">#fff</color>
 
 </resources>
