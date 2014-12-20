@@ -8,4 +8,15 @@ public class Tag {
     public String name;
     public String created_at;
     public String updated_at;
+
+    private static String[] systemTags = {"public", "fun", "drop", "sale", "buy", "want"};
+
+    public static boolean isSystem(String tag) {
+        for(int i=0; i<systemTags.length; i++) {
+            if(tag.contains(systemTags[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

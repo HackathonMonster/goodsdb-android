@@ -101,8 +101,6 @@ public class PostActivity extends ActionBarActivity implements AddTagDialogFragm
     TextView mSendTextView;
     @ViewById(R.id.post_imageview_send)
     ImageView mSendImageView;
-    @ViewById(R.id.post_button_drop)
-    LinearLayout mDropButton;
 
     private Context mContext;
 
@@ -220,18 +218,20 @@ public class PostActivity extends ActionBarActivity implements AddTagDialogFragm
         mSelectString = null;
     }
 
+    /**
+     * This method is refreshing all tags.
+     */
     private void refleshGridLayout() {
-        Log.d("PostActivity","refleshGridLayout");
         mGridLayout.removeAllViews();
         for(String tag : mTagTexts) {
-            if(tag!=null) {
+            if(tag != null) {
                 TextView textView = getTagTextView(tag);
-                if(mRunchType!=RUNCH_DETAIL) {
+                if(mRunchType != RUNCH_DETAIL) {
                     textView.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View v) {
                             Object tag = v.getTag();
-                            if(tag!=null) {
+                            if(tag != null) {
                                 mTagTexts.remove(tag);
                                 mSelectString = (String) tag;
                                 showAddTagDialog((String) tag);
@@ -249,7 +249,6 @@ public class PostActivity extends ActionBarActivity implements AddTagDialogFragm
                             }
                         }
                     });
-
                 }
                 mGridLayout.addView(textView);
             }
@@ -268,10 +267,19 @@ public class PostActivity extends ActionBarActivity implements AddTagDialogFragm
         }
     }
 
+    /**
+     * This method is return view for "tag"'s TextView.
+     * @param tag
+     * @return TextView
+     */
     private TextView getTagTextView(String tag) {
         TextView textView = (TextView) mInflater.inflate(R.layout.item_tag, null);
         textView.setText(tag);
         textView.setTag(tag);
+        if(tag.substring(0,1).equals("#") && Tag.isSystem(tag)) {
+            textView.setBackgroundResource(R.drawable.bg_tag_system);
+            textView.setTextColor(getResources().getColor(R.color.primary_orange));
+        }
         return textView;
     }
 
@@ -386,7 +394,7 @@ public class PostActivity extends ActionBarActivity implements AddTagDialogFragm
             @Override
             public void onSuccessNetworkTask(int taskId, final Object object) {
                 Log.d("Response", object.toString());
-                MessageDialogFragment dialog = MessageDialogFragment.newInstance("削除が完了しました！","閉じる");
+                MessageDialogFragment dialog = MessageDialogFragment.newInstance("変更が完了しました！","閉じる");
                 dialog.setCallback(new MessageDialogFragment.MessageDialogCallback() {
                     @Override
                     public void onMessageDialogCallback() {
@@ -442,7 +450,7 @@ public class PostActivity extends ActionBarActivity implements AddTagDialogFragm
             @Override
             public void onSuccessNetworkTask(int taskId, final Object object) {
                 Log.d("Response", object.toString());
-                MessageDialogFragment dialog = MessageDialogFragment.newInstance("変更が完了しました！","閉じる");
+                MessageDialogFragment dialog = MessageDialogFragment.newInstance("削除が完了しました！","閉じる");
                 dialog.setCallback(new MessageDialogFragment.MessageDialogCallback() {
                     @Override
                     public void onMessageDialogCallback() {
@@ -501,9 +509,6 @@ public class PostActivity extends ActionBarActivity implements AddTagDialogFragm
                     mSendTextView.setText(R.string.post_button_favo);
                     mSendImageView.setImageResource(R.drawable.ic_heart);
                 }
-                //TODO 落とし物ようのフラグ
-                mDropButton.setVisibility(View.VISIBLE);
-
             } else {
                 mNameEditText.setEnabled(true);
                 mAddImageView.setVisibility(View.VISIBLE);
@@ -543,8 +548,4 @@ public class PostActivity extends ActionBarActivity implements AddTagDialogFragm
         }
     };
 
-    @Click(R.id.post_button_drop)
-    void dropRequest() {
-        //TODO 落とし物の申請
-    }
 }

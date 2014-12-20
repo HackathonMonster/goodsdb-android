@@ -8,7 +8,7 @@
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar_actionbar"
-        android:layout_height="@dimen/button_height"
+        android:layout_height="@dimen/actionbar_height"
         android:layout_width="match_parent"
         android:minHeight="?attr/actionBarSize"
         android:background="@color/primary">
@@ -127,39 +127,6 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="@string/post_button_save"
-                    android:textColor="@color/primary"
-                    android:layout_gravity="center_vertical"
-                    android:gravity="center"
-                    android:textStyle="bold"
-                    android:layout_marginRight="@dimen/button_size" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/post_button_drop"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:background="@drawable/bg_post_label"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:layout_marginBottom="@dimen/activity_vertical_margin">
-
-                <ImageView
-                    android:id="@+id/post_imageview_drop"
-                    android:layout_width="@dimen/button_height"
-                    android:layout_height="@dimen/button_height"
-                    android:src="@drawable/ic_drop"
-                    android:background="@drawable/bg_post_icon"
-                    android:scaleType="fitCenter" />
-
-                <TextView
-                    android:id="@+id/post_textview_drop_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/post_button_drop"
                     android:textColor="@color/primary"
                     android:layout_gravity="center_vertical"
                     android:gravity="center"
