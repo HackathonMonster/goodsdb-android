@@ -119,6 +119,7 @@ public class GalleryActivity extends ActionBarActivity implements AdapterView.On
     private void onRequest() {
         Account account = AccountHelper.getAccount(getApplicationContext());
         Map<String, String> header = new HashMap<String, String>();
+        if(account.user==null) return;
         header.put("X-Token", account.user.token);
         //header.put("X-Token", "dummy_token");
         JSONArrayRequestUtil getGoodsTask = new JSONArrayRequestUtil(new NetworkTaskCallback() {

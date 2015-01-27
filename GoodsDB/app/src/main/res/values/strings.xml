@@ -37,7 +37,6 @@
     <string-array name="gallery_type_spinner">
         <item>ギャラリー</item>
         <item>お気に入り</item>
-        <item>落とし物</item>
     </string-array>
 
     <string name="title_activity_search">SearchActivity</string>
